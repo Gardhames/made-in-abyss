@@ -1,0 +1,17 @@
+#version 460 core
+#extension GL_ARB_gpu_shader_int64 : require
+#extension GL_ARB_gpu_shader_fp64 : require
+layout(local_size_x=128) in;
+#include "common.glsl"
+void main(){uint job=invocation();if(job>=uCount)return;uint owner=uJobOffset+job;int sky=faces[owner*8u],n=faceCount(owner);if(sky<14)for(int f=0;f<n;f++){
+        ivec3 p=facePoint(owner,f);int op=opacityAt(p);if(op<0||op>=15)continue;int level;
+        if(faces[owner*8u+2u+uint(f)]>=0)level=faces[owner*8u+2u+uint(f)];
+        else{ivec3 b=(p>>3)*8;precise dvec3 phase=dvec3(p-b)/8.0;precise double sum=0.0,weights=0.0;
+            for(int dy=0;dy<=1;dy++)for(int dz=0;dz<=1;dz++)for(int dx=0;dx<=1;dx++){
+                precise double w=(dx==0?1.0-phase.x:phase.x)*(dy==0?1.0-phase.y:phase.y)*(dz==0?1.0-phase.z:phase.z);if(w==0.0)continue;ivec3 q=b+ivec3(dx,dy,dz)*8;if(q.y<knownLower(q.xz)||opacityAt(q)>=15||!openSegment(p,q))continue;sum+=w*fractionAt(q);weights+=w;
+            }
+            if(weights==0.0){atomicAdd(counters[7],1u);level=0;}else level=diffuseLevel(sum/weights);
+        }
+        sky=max(sky,level);if(sky>=14)break;
+    }faces[owner*8u+1u]=sky;
+}

@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "provenance": "ORIGINAL",
+  "reviewStatus": "PENDING_VISUAL_REVIEW",
+  "seed": 927,
+  "alexAssets": true,
+  "toolkitCommit": "262850795f317a8e4340987bbbe4a8d0ecb68afe",
+  "scope": "All supported first-layer ledges and composed cave surfaces. Ancient groves retained; richer canopy understory, paired curly ferns, broad cycads, dark underweed, grounded deadfall, suspended vines and exposed mineral lenses. Original registered Alex blocks, not transplanted feature/world writes.",
+  "designNotes": {
+    "communities": ["primordial shelf grove", "damp cave entrance", "mineral interior", "dark underweed pockets"],
+    "placement": "Coherent moisture, surface and entrance-distance masks. Whole-feature support and clearance admission over actual composed blocks; route reservations; bounded signed XYZ sampling.",
+    "water": "Existing retained pools and cave bowls preserved; no acid or water replacement.",
+    "translucency": "Amber proposals retain baseline rock: sorted native translucent block pass is not implemented; no invisible amber is generated.",
+    "canon": "Artistic ecological reconstruction awaiting screenshots; not a canonical species assignment. Population AI and full author biome lifecycle are separate work."
+  },
+  "assetProvider": {
+    "mod": "alexscaves", "version": "2.0.2", "dependency": "citadel 2.6.3",
+    "sha256": "131e205ce3eed384d701b336d8a0d4a671108ed56b6eff6014f0e407db2997f0",
+    "mode": "unchanged installed dependency; exact registered BlockStates"
+  }
+}

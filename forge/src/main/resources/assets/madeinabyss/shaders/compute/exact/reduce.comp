@@ -1,0 +1,6 @@
+#version 460 core
+#extension GL_ARB_gpu_shader_int64 : require
+#extension GL_ARB_gpu_shader_fp64 : require
+layout(local_size_x=128) in;
+#include "common.glsl"
+void main(){uint i=invocation();if(i>=uCount)return;precise double sum=0.0;for(uint r=0u;r<32u;r++)sum+=scratch[i*32u+r];uint index=jobs[uJobOffset+i];if(index<(1u<<24))fractions0[index]=sum/32.0;else fractions1[index-(1u<<24)]=sum/32.0;}

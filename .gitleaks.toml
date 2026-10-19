@@ -1,0 +1,13 @@
+title = "Made in Abyss publication scan"
+
+[extend]
+useDefault = true
+
+# This exact Java field is not a credential. Keep all other matches enabled.
+[[allowlists]]
+description = "Java field skyColumnOrder in its typed collection declaration"
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = ['''(^|/)forge/src/main/java/dev/madeinabyss/forge/worldgen/GeneratedSkySource\.java$''']
+regexTarget = "line"
+regexes = ['''^\s*private final java\.util\.ArrayDeque<SkyColumnKey> skyColumnOrder=new java\.util\.ArrayDeque<>\(\);\s*$''']

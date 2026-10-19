@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "plugin": "dev.madeinabyss.forge.probe.deep.mixin.GeneratedRenderMixinPlugin",
+  "minVersion": "0.8",
+  "package": "dev.madeinabyss.forge.probe.deep.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "madeinabyss.deep-probe.refmap.json",
+  "mixins": ["LevelMixin", "GeneratedNativeSimulationMixin", "GeneratedNativeChunkCompletionMixin", "GeneratedNativeChunkCacheMixin", "ServerLevelFluidMixin", "ServerLevelChestMixin", "ServerSurvivalPlacementMixin", "ServerSurvivalMiningMixin", "ManagedItemTakeMixin", "NativeLightSectionMixin", "EntityMixin", "ItemEntityTickAvailabilityMixin", "ServerPlayerMixin", "ServerGamePacketListenerImplMixin", "NaturalSpawnerMixin"],
+  "client": ["MultiPlayerGameModeMixin", "ClientMiningPacketMixin", "ClientMiningCrackMixin", "ClientMiningParticleMixin", "ClientLevelMixin", "GeneratedCameraAdmissionMixin", "GeneratedForgeFogAdmissionMixin", "GeneratedWorldFrameAdmissionMixin", "GeneratedNativePacketReadMixin", "GeneratedNativeBlockPacketMixin", "GeneratedNativeEntityPacketMixin", "GeneratedNativeModelDataMixin", "GeneratedFogDatumMixin", "GeneratedWeatherMixin", "GeneratedTerrainLayerMixin", "GeneratedEmbeddiumMixin", "GeneratedShaderEyeMixin", "GeneratedIterationFogSourceMixin", "GeneratedShaderHandMixin", "LocalPlayerMixin", "LivingAbyssNativeTintMixin", "LivingAbyssLeafTintMixin", "GuiLightAvailabilityMixin", "HandLightAvailabilityMixin", "DebugLightAvailabilityMixin", "EntityLightAvailabilityMixin", "ManagedItemRendererMixin", "ManagedItemShadowMixin", "ParticleLightAvailabilityMixin", "ParticleTickAvailabilityMixin", "ParticleMoveAvailabilityMixin", "ClientRemotePlayerAvailabilityMixin", "RemotePlayerPushAvailabilityMixin", "ProbeLanAdmissionMixin", "BackgroundWindowMixin", "GeneratedGlSubmissionCountersMixin", "GeneratedShaderApplyCountersMixin", "GeneratedExtendedApplyCountersMixin", "GeneratedIrisUniformCountersMixin", "GeneratedDhUniformCountersMixin"],
+  "injectors": { "defaultRequire": 1 }
+}

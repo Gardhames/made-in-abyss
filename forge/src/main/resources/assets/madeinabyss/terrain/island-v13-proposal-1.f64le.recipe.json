@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "provenance": "RECONSTRUCTION",
+  "approvedProposalId": "island-v13/proposal-1",
+  "assetId": "assets/madeinabyss/terrain/island-v13-proposal-1.f64le.zlib",
+  "dataSha256": "f1dec5462139bfbcde073d9693653b0dc96dbb38c5b1bf8aefda3b114ec2d9af",
+  "compressedSha256": "8fead3a7f089b1053d6ed3627b553a260a3754186a3a69a8e77c4868251d1f00",
+  "encoding": "zlib-float64le-x-major-z-minor",
+  "nx": 641,
+  "nz": 641,
+  "step": 4,
+  "minX": -1280,
+  "minZ": -1280,
+  "seaY": 0,
+  "protectedShaftRadius": 500,
+  "preservedDeepRadius": 960,
+  "exteriorLowerY": -5000,
+  "ecologySeed": 130091,
+  "bathymetry": "approved-pchip-v1",
+  "materials": "slope-layered-v1",
+  "ecology": "supported-oak-shrub-groundcover-v1",
+  "algorithmSha256": "SET_FROM_COMPILED_CLASSES"
+}

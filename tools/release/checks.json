@@ -1,0 +1,3 @@
+{
+  "commands": [["{gradlew}", "--no-daemon", "build"]]
+}

@@ -1,0 +1,9 @@
+pluginManagement {
+    repositories {
+        maven { name = 'MinecraftForge'; url = 'https://maven.minecraftforge.net/' }
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'made-in-abyss'
+include 'kernel', 'forge'

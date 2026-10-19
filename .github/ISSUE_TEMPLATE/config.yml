@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Project status and current limitations
+    url: https://github.com/Gardhames/made-in-abyss/blob/main/docs/public/status.md
+    about: Read the current prototype scope before opening an issue.
+  - name: Security reporting
+    url: https://github.com/Gardhames/made-in-abyss/security/policy
+    about: Follow the security policy for sensitive vulnerability reports.

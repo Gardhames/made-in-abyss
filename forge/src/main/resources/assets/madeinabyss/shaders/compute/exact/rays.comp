@@ -1,0 +1,9 @@
+#version 460 core
+#extension GL_ARB_gpu_shader_int64 : require
+#extension GL_ARB_gpu_shader_fp64 : require
+layout(local_size_x=128) in;
+#include "common.glsl"
+void main(){uint id=invocation();if(id>=uCount*32u)return;uint job=id>>5,ray=id&31u;ivec3 p=nodePoint(jobs[uJobOffset+job]);ivec4 dir=uDirections[ray];i64vec3 next=i64vec3(1);precise double t=1.0;ivec3 last=ivec3(-2147483647);int cachedOpacity=-2;
+    for(int visited=0;visited<100000;visited++){if(p.y>=uSky){scratch[id]=t;return;}ivec3 b=p>>4;if(any(notEqual(b,last))){cachedOpacity=uniformCube(b);last=b;}int op=cachedOpacity>=0?cachedOpacity:opacityAt(p);if(op<0){scratch[id]=0.0;return;}if(op==15){scratch[id]=0.0;return;}if(op>0)t*=uFactors[op];advanceRay(p,next,dir);}
+    atomicAdd(counters[4],1u);scratch[id]=0.0;
+}

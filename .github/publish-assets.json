@@ -1,0 +1,47 @@
+{
+  "gradle/wrapper/gradle-wrapper.jar": {
+    "sha256": "ed2c26eba7cfb93cc2b7785d05e534f07b5b48b5e7fc941921cd098628abca58",
+    "bytes": 62076,
+    "provenance": "Gradle 8.8 wrapper; Apache-2.0"
+  },
+  "forge/src/main/resources/data/madeinabyss/structures/empty.nbt": {
+    "sha256": "5eee1329a64c0f05fa1b02fd2f014881b124810d37b5a371d585573b657e3a09",
+    "bytes": 110,
+    "provenance": "Original project-generated source asset; ARR"
+  },
+  "forge/src/main/resources/data/madeinabyss_a2/structures/empty.nbt": {
+    "sha256": "5eee1329a64c0f05fa1b02fd2f014881b124810d37b5a371d585573b657e3a09",
+    "bytes": 110,
+    "provenance": "Original project-generated source asset; ARR"
+  },
+  "forge/src/main/resources/data/near_delta/structures/empty.nbt": {
+    "sha256": "5eee1329a64c0f05fa1b02fd2f014881b124810d37b5a371d585573b657e3a09",
+    "bytes": 110,
+    "provenance": "Original project-generated source asset; ARR"
+  },
+  "forge/src/main/resources/data/near_scope/structures/empty.nbt": {
+    "sha256": "5eee1329a64c0f05fa1b02fd2f014881b124810d37b5a371d585573b657e3a09",
+    "bytes": 110,
+    "provenance": "Original project-generated source asset; ARR"
+  },
+  "forge/src/main/resources/data/near_stage1/structures/empty.nbt": {
+    "sha256": "5eee1329a64c0f05fa1b02fd2f014881b124810d37b5a371d585573b657e3a09",
+    "bytes": 110,
+    "provenance": "Original project-generated source asset; ARR"
+  },
+  "forge/src/main/resources/assets/madeinabyss/terrain/island-v13-proposal-1.f64le.zlib": {
+    "sha256": "8fead3a7f089b1053d6ed3627b553a260a3754186a3a69a8e77c4868251d1f00",
+    "bytes": 2761580,
+    "provenance": "Original project-generated source asset; ARR"
+  },
+  "docs/public/images/first-layer-axis.webp": {
+    "sha256": "ec124893255a43fa4db9bbf05a0ef7ddc725df796531bd0fe9eb218b3c68f0e6",
+    "bytes": 189394,
+    "provenance": "Approved project gameplay capture; upstream rendered-content rights retained"
+  },
+  "docs/public/images/social-preview.jpg": {
+    "sha256": "58c60a876cdbb97437bee1d2d4447fbd1d69cc19e22c5cb3838758ee1f311ace",
+    "bytes": 176085,
+    "provenance": "Approved project gameplay capture; upstream rendered-content rights retained"
+  }
+}

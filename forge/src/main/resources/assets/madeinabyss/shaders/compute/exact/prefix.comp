@@ -1,0 +1,15 @@
+#version 460 core
+#extension GL_ARB_gpu_shader_int64 : require
+#extension GL_ARB_gpu_shader_fp64 : require
+layout(local_size_x=32) in;
+#include "common.glsl"
+shared double transmissions[32];
+shared uint completed[32],exhausted[32];
+shared int answer;
+void main(){uint job=gl_WorkGroupID.y*32768u+gl_WorkGroupID.x;if(job>=uCount)return;job+=uJobOffset;uint ray=gl_LocalInvocationID.x,face=jobs[uFractionCap+job],owner=face/6u,side=face%6u;ivec3 p=facePoint(owner,int(side));ivec4 dir=uDirections[ray];i64vec3 next=i64vec3(1);precise double t=1.0;bool done=p.y>=uSky;int visited=0;ivec3 last=ivec3(-2147483647);int cachedOpacity=-2;
+    while(true){for(int step=0;step<8&&!done&&visited<100000;step++){ivec3 b=p>>4;if(any(notEqual(b,last))){cachedOpacity=uniformCube(b);last=b;}int op=cachedOpacity>=0?cachedOpacity:opacityAt(p);visited++;if(op<0||op==15){t=0.0;done=true;break;}if(op>0)t*=uFactors[op];advanceRay(p,next,dir);if(p.y>=uSky)done=true;}
+        transmissions[ray]=t;completed[ray]=done?1u:0u;exhausted[ray]=!done&&visited>=100000?1u:0u;barrier();
+        if(ray==0u){precise double lo=0.0,hi=0.0;bool allDone=true,limit=false;for(int r=0;r<32;r++){lo+=completed[r]!=0u?transmissions[r]:0.0;hi+=transmissions[r];allDone=allDone&&completed[r]!=0u;limit=limit||exhausted[r]!=0u;}answer=allDone?diffuseLevel(lo/32.0):certify(lo/32.0,hi/32.0);if(answer<0&&limit){atomicAdd(counters[4],1u);answer=0;}}
+        barrier();if(answer>=0){if(ray==0u)faces[owner*8u+2u+side]=answer;return;}
+    }
+}

@@ -1,0 +1,94 @@
+# Build outputs and isolated development data
+.gradle/
+**/build/
+/.local/
+/run/
+/run-data/
+/logs/
+/dist/
+/evidence/
+/caches/
+/world/
+/worlds/
+/saves/
+*.log
+hs_err_pid*
+replay_pid*
+*.hprof
+*.jfr
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+*.zip
+*.7z
+*.tar
+*.gz
+*.miacube
+*.miaentity
+
+# IDE and OS
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*~
+*.swp
+
+# Package caches and virtual environments
+node_modules/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# Credentials and private workstation settings
+.env
+.env.*
+!.env.example
+local.properties
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+secrets.json
+
+# Internal agent instructions, conversations and orchestration
+AGENTS.md
+CLAUDE.md
+.agents/
+.claude/
+.codex/
+.agentbridge/
+.mcp.json
+/start-bridge.cmd
+
+# Internal research, historical reports and captures stay local.
+/docs/*
+!/docs/public/
+/data/canon/
+
+# Publish portable entry points; keep machine-bound investigations local.
+/scripts/*
+!/scripts/gradle.ps1
+!/scripts/client.ps1
+!/scripts/create_probe_structure.py
+/tools/*
+!/tools/client/
+!/tools/release/
+!/tools/landscape/
+/tools/landscape/*
+!/tools/landscape/v15_wall_proto.py
+/tools/client/*
+!/tools/client/control.mjs
+!/tools/client/cli.mjs
+
+# Local publication review artifacts
+/.publication/

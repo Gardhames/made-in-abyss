@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "provenance": "ORIGINAL",
+  "reviewStatus": "PENDING_VISUAL_REVIEW",
+  "ecologySeed": 827,
+  "alexAssets": true,
+  "caves": {
+    "seed": 827,
+    "sectorSpacing": 96,
+    "verticalSpacing": 96,
+    "maximumPenetration": 36,
+    "tunnelRadius": 2.5,
+    "portalRadius": 3.5,
+    "shallowDepth": 4,
+    "mouthProtection": 64
+  },
+  "scope": "Known first-layer walls and supported ledges; multi-exit caves, branch fissures, dense mixed groves and sealed pools. New immutable preview, no migration of visited terrain.",
+  "assetProvider": {"mod":"alexscaves","version":"2.0.2","dependency":"citadel 2.6.3","mode":"registered original blocks; archives unchanged"},
+  "references": ["https://modrinth.com/mod/alexs-caves/version/lC8HHXOF", "https://github.com/AlexModGuy/AlexsCaves"]
+}

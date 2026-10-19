@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "revision": "15.4-part3b-r13",
+  "provenance": "RECONSTRUCTION",
+  "seed": 20261003,
+  "domain": {"knownLowerY": -1424, "wallBottomY": -1350, "temporaryFloorY": -1400, "emptyRadius": 380, "emptyTopY": -120},
+  "fields": {"zoneBoundaries": [120, 450, 800, 1150, 1350], "zoneNoiseMetres": 25, "sidePlateauDegrees": 22.5, "sideTransitionDegrees": 45, "fallbackWetDegrees": 20},
+  "archetypes": {
+    "base": [20, 18, 14, 14, 14, 8, 12],
+    "sideMultipliers": [[0.8, 1, 2.5, 1, 1.2, 1, 1], [1, 1, 1, 1, 1.8, 1.5, 1.5], [1.8, 0.6, 0.5, 1.5, 1, 1, 1], [0.7, 2.5, 1, 1, 1, 1, 1]],
+    "mist": [20, 0, 0, 0, 45, 0, 35],
+    "threshold": [0, 50, 0, 0, 20, 0, 30],
+    "neighbourOverlap": 0.3,
+    "meadowAmplitude": 2, "groveAmplitude": 3, "lakeDepth": [2, 5],
+    "terraceCount": [3, 5], "terraceRise": [2, 4], "boulderHeight": [2, 6], "overhangThickness": [6, 12]
+  },
+  "newLedges": {"sunnyWidthMultiplier": 1.15, "mistDensityMultiplier": 0.4},
+  "cascade": {"count": [4, 5], "sourceDepth": 140, "ledgeDepth": [250, 520], "halfWidthDegrees": 6, "receiverDrop": 150, "receiverAngleDegrees": 4, "terminationDepth": [880, 1030], "bowlWidth": [6, 14], "termination": "SUPPORTED_BOWL_OR_CAVE_DRAIN"},
+  "wall": {
+    "paletteSemantics": "formula-weights-not-output-percentages",
+    "flutePeriod": 6, "fluteStretch": 20, "fluteDepth": 1.2,
+    "pipePeriod": 18, "pipeStretch": 8, "pipeDepth": 3.5,
+    "driftPeriod": 60, "driftAmp": 8, "bulgePeriod": 90, "bulgeDepth": 10,
+    "streakWidth": 5, "streakStretch": 16, "strataPeriod": 30,
+    "slabPeriod": 34, "slabStretch": 10, "slabDepth": 9, "slabSteps": 5,
+    "palettes": [
+      {"stone":36,"andesite":32,"calcite":6,"dripstone_block":7,"white_terracotta":2,"mossy_cobblestone":12},
+      {"stone":36,"andesite":32,"calcite":6,"dripstone_block":7,"white_terracotta":2,"tuff":7,"mossy_cobblestone":10},
+      {"stone":35,"tuff":25,"andesite":15,"calcite":10,"dripstone_block":8,"moss_block":7},
+      {"stone":80,"tuff":20,"deepslate":0},
+      {"stone":50,"tuff":10,"deepslate":40}
+    ]
+  },
+  "curtains": {"mossBelowLedge":20,"mossStreakLen":40,"vineMin":6,"vineMax":30,"drapeWidth":7,"drapeLen":35,"drapeCover":0.18,"anchorsPerCluster":5,"scatterX":9,"scatterY":3,"clumpMin":3,"clumpMax":6,"wetMultiplier":1.5,"sunnyMultiplier":0.5},
+  "spires": {"diameter":[12,45],"height":[40,220],"wallDistance":[10,140],"groupSize":[2,5],"frequenciesPer100m":[0.3,1,1.5],"karstMultiplier":2.5,"outsideKarstMultiplier":1.5,"topRadiusRatio":0.82,"saddleThickness":12},
+  "biomeColors": {"grass":"#5E8F34","foliage":"#4F8030","water":"#3F9FB0"},
+  "frequenciesPer100m": {"arch": 0.6, "amphitheatre": 0.3, "column": 1.2, "cave": 1, "trunk": 0.25, "organGroup": 0.33, "fin": 0.5},
+  "ecology": {"meadowGrassShare": 0.7, "meadowFlowerShare": 0.15, "meadowTreeArea": 600, "groveTreeArea": 40, "forestTreeMultiplier": 2, "invertedTreeArea": [300, 800]},
+  "strata": {"tiltDegrees": [3, 8], "thickness": [4, 22], "boundaryNoise": 2},
+  "landmarks": {"bridge": [95, 600], "giant": [150, 480, 700], "lightWell": [60, 600], "organHall": [230, 1100, 850], "gates": [180, 1340, 1180], "angleTolerance": 3, "heightTolerance": 10}
+}

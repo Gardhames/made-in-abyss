@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "provenance": "ORIGINAL",
+  "reviewStatus": "PENDING_VISUAL_REVIEW",
+  "toolkitCommit": "262850795f317a8e4340987bbbe4a8d0ecb68afe",
+  "cliffs": {
+    "seed": 827,
+    "maximumRecessMetres": 12,
+    "ribSpacingMetres": 64,
+    "verticalRibScaleMetres": 144,
+    "strataSpacingMetres": 28,
+    "fractureWidthMetres": 4,
+    "pocketSpacingMetres": 56,
+    "pocketHeightMetres": 10,
+    "pocketWidthMetres": 18,
+    "mouthBlendMetres": 48
+  },
+  "scope": "All currently declared first-layer wall azimuths and supported ledges; island surfaces. Preserve broad shelves, mouth, explicit trails and prior authored patch footprints. Never assign unknown lower layers.",
+  "references": [
+    "https://www.nps.gov/yose/learn/nature/rockfall.htm",
+    "https://www.nps.gov/meve/learn/nature/geology.htm"
+  ]
+}

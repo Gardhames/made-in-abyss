@@ -1,0 +1,31 @@
+name: Feature request
+description: Propose a focused improvement to the prototype.
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: Explain the player or developer need.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: State the result you want and how you would verify it.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and alternatives
+      description: Note compatibility, persistence, performance, or artistic decisions that need discussion.
+  - type: checkboxes
+    id: roadmap
+    attributes:
+      label: Current roadmap
+      options:
+        - label: I read the status and understand that full-depth gameplay and GPU edit integration are unfinished.
+          required: true

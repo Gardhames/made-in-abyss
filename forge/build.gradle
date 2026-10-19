@@ -1,0 +1,234 @@
+plugins { id 'net.minecraftforge.gradle' version '6.0.24' }
+evaluationDependsOn(':kernel')
+java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
+base { archivesName = 'made-in-abyss-probe' }
+
+def miaClientInstance = providers.gradleProperty('miaClientInstance').getOrElse('')
+if (miaClientInstance && !(miaClientInstance ==~ /[a-z0-9][a-z0-9-]{0,31}/)) {
+    throw new GradleException('miaClientInstance must be a lowercase slug of 1-32 letters, digits or hyphens')
+}
+def miaClientRunDirectory = miaClientInstance ? "client-${miaClientInstance}" : 'client'
+def miaClientUsername = providers.gradleProperty('miaClientUsername')
+if (miaClientUsername.isPresent() && !(miaClientUsername.get() in ['Dev', 'MiaNative02', 'MiaNative03', 'MiaNative04'])) {
+    throw new GradleException('miaClientUsername must be one of the four authorized offline native-test identities')
+}
+def miaClientMaxFps = providers.gradleProperty('miaClientMaxFps')
+def miaClientHeapGiB = providers.gradleProperty('miaClientHeapGiB')
+if (miaClientHeapGiB.isPresent() && !(miaClientHeapGiB.get() in ['2','3','4','5','6','7','8','9','10','11','12','13','14','15','16'])) {
+    throw new GradleException('miaClientHeapGiB must be an integer between 2 and 16')
+}
+def miaGeneratorPreviewProfile = providers.gradleProperty('miaGeneratorPreviewProfile')
+def miaDistantHorizons = providers.gradleProperty('miaDistantHorizons').getOrElse('false').toBoolean()
+def miaOptimizationMods = providers.gradleProperty('miaOptimizationMods').getOrElse('false').toBoolean()
+def miaShaderPipeline = providers.gradleProperty('miaShaderPipeline').getOrElse('false').toBoolean()
+if (miaClientMaxFps.isPresent() && (!(miaClientMaxFps.get() ==~ /[0-9]{1,3}/)
+        || miaClientMaxFps.get().toInteger() < 10 || miaClientMaxFps.get().toInteger() > 260)) {
+    throw new GradleException('miaClientMaxFps must be an integer between 10 and 260')
+}
+
+minecraft {
+    mappings channel: 'official', version: '1.20.1'
+    copyIdeResources = false
+    runs {
+        configureEach {
+            workingDirectory rootProject.file("${rootProject.miaStorageRoot}/run/${name}")
+            property 'mia.storageRoot', rootProject.miaStorageRoot
+            property 'forge.logging.console.level', 'info'
+            property 'forge.enabledGameTestNamespaces', providers.gradleProperty('miaGameTestNamespaces').getOrElse('madeinabyss,near_stage1,near_delta,near_scope')
+            property 'mia.cube.networkProbe', 'true'
+            property 'mia.cube.playerProbe', 'true'
+            property 'mia.generated.optimizedSampler', providers.gradleProperty('miaGeneratorOptimizedSampler').getOrElse('true')
+            property 'mia.generated.opacityPages', providers.gradleProperty('miaOpacityPages').getOrElse('true')
+            property 'mia.dh.boxLightSpatialOrder', providers.gradleProperty('miaBoxLightSpatialOrder').getOrElse('false')
+            property 'mia.generated.caveOpacityProjection', providers.gradleProperty('miaCaveOpacityProjection').getOrElse('true')
+            property 'mia.generated.nativeFirstView', providers.gradleProperty('miaNativeFirstView').getOrElse('true')
+            property 'mia.near.prototypeCost', providers.gradleProperty('miaNearPrototypeCost').getOrElse('false')
+            if (miaGeneratorPreviewProfile.isPresent()) {
+                property 'mia.generator.previewProfile', rootProject.file(miaGeneratorPreviewProfile.get()).absolutePath
+            }
+            args '--mixin.config', 'madeinabyss.deep-probe.mixins.json'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', layout.buildDirectory.file('createSrgToMcp/output.srg').get().asFile.absolutePath
+            mods { madeinabyss { source sourceSets.main; source project(':kernel').sourceSets.main } }
+        }
+        client {
+            // 2026-10-16 T13: live heap ~2.3 GB; 8 GB with adaptive Shenandoah gave 0 frames >50 ms (6 GB: degenerated GC stalls).
+            jvmArgs "-Xmx${miaClientHeapGiB.isPresent() ? miaClientHeapGiB.get() : 8}G"
+            // 2026-10-15 perf: G1 young pauses of 100-270 ms at 1.3-2.2 GB/s allocation were the frame spikes;
+            // Shenandoah measured max pause 0.27 ms, max frame 34-51 ms instead of 153-241 ms. -PmiaClientGc=G1 restores G1.
+            def miaGc = providers.gradleProperty('miaClientGc').getOrElse('Shenandoah')
+            jvmArgs "-XX:+Use${miaGc}GC"
+            // 2026-10-16 RAM: Shenandoah kept the whole -Xmx committed (process ~19 GB with 16G heap while the live set
+            // after GC was ~5-6 GB). 1 s uncommit returns free regions to the OS; -PmiaClientGcCompact=false reverts. compact heuristics were
+            // dropped after T13: at 8 GB they fell into degenerated GC (pauses up to 0.9 s); adaptive had none at the same RAM.
+            if (miaGc == 'Shenandoah' && providers.gradleProperty('miaClientGcCompact').getOrElse('true').toBoolean())
+                jvmArgs '-XX:+UnlockExperimentalVMOptions', '-XX:ShenandoahUncommitDelay=1000', '-XX:ShenandoahGuaranteedGCInterval=10000'
+            if (providers.gradleProperty('miaClientJvmArgs').isPresent()) jvmArgs providers.gradleProperty('miaClientJvmArgs').get().split(' ').findAll { it }
+            workingDirectory rootProject.file("${rootProject.miaStorageRoot}/run/${miaClientRunDirectory}")
+            args '--width', providers.gradleProperty('miaClientWidth').getOrElse('1280'),
+                 '--height', providers.gradleProperty('miaClientHeight').getOrElse('720')
+            // The actual Forge 47.4.20 userdev defaults contain no --username argument.
+            if (miaClientUsername.isPresent()) args '--username', miaClientUsername.get()
+            if (providers.gradleProperty('miaClientFullscreen').getOrElse('false').toBoolean()) args '--fullscreen'
+            property 'mia.client.automation', 'true'
+            // A/B switch for background cube loading in the integrated server.
+            property 'mia.cube.asyncLoading', providers.gradleProperty('miaCubeAsyncLoading').getOrElse('true')
+            property 'mia.cube.asyncSaving', providers.gradleProperty('miaCubeAsyncSaving').getOrElse('true')
+            property 'madeinabyss.iterationTFogAdapter', providers.gradleProperty('miaIterationTFogAdapter').getOrElse('false')
+            property 'mia.lod.provisionalLight155', providers.gradleProperty('miaLodProvisionalLight155').getOrElse('true')
+            if (miaDistantHorizons) property 'mia.compat.distantHorizons', 'true'
+            property 'mia.dh.pipeline', providers.gradleProperty('miaDhLodPipeline').getOrElse('legacy')
+            property 'mia.dh.surfaceMesh', providers.gradleProperty('miaDhSurfaceMesh').getOrElse('false')
+            if (providers.gradleProperty('miaDhPreviewCacheDirectory').isPresent()) {
+                property 'mia.dh.previewCacheDirectory', rootProject.file(providers.gradleProperty('miaDhPreviewCacheDirectory').get()).absolutePath
+            }
+            if (providers.gradleProperty('miaIslandColumnCacheCapacity').isPresent()) {
+                def capacity = providers.gradleProperty('miaIslandColumnCacheCapacity').get()
+                if (!(capacity ==~ /[0-9]{1,6}/) || capacity.toInteger() < 1 || capacity.toInteger() > 131072) {
+                    throw new GradleException('miaIslandColumnCacheCapacity must be an integer in 1..131072')
+                }
+                property 'mia.generated.islandColumnCapacity', capacity
+            }
+            property 'mia.control.root', rootProject.file("${rootProject.miaStorageRoot}/run/${miaClientRunDirectory}/automation").absolutePath
+            if (miaClientMaxFps.isPresent()) property 'mia.client.maxFps', miaClientMaxFps.get()
+            if (providers.gradleProperty('miaQuickPlayWorld').isPresent()) {
+                args '--quickPlaySingleplayer', providers.gradleProperty('miaQuickPlayWorld').get()
+            }
+        }
+        server {
+            args '--nogui'
+            property 'mia.probe.stopAfterStartup', providers.gradleProperty('miaServerSmoke').getOrElse('false')
+            if (providers.gradleProperty('miaBotServer').getOrElse('false').toBoolean()) {
+                workingDirectory rootProject.file("${rootProject.miaStorageRoot}/run/botServer")
+            }
+        }
+        gameTestServer {
+            if (providers.gradleProperty('miaBenchV15A2Mode').isPresent()) {
+                property 'forge.enabledGameTestNamespaces', 'madeinabyss_a2'
+                property 'mia.bench.v15A2Mode', providers.gradleProperty('miaBenchV15A2Mode').get()
+                if(providers.gradleProperty('miaBenchV15A2Reference').isPresent())property 'mia.bench.v15A2Reference', rootProject.file(providers.gradleProperty('miaBenchV15A2Reference').get()).absolutePath
+                property 'mia.bench.v15ReferenceOnly', providers.gradleProperty('miaBenchV15A2Mode').get() == 'record' ? 'true' : 'false'
+                jvmArgs '-Xmx5G'
+            }
+            if (providers.gradleProperty('miaBenchV15Jfr').isPresent()) jvmArgs "-XX:StartFlightRecording=filename=${rootProject.file(providers.gradleProperty('miaBenchV15Jfr').get()).absolutePath},settings=profile,dumponexit=true"
+            property 'mia.bench.v15Lod', providers.gradleProperty('miaBenchV15Lod').getOrElse('false')
+            if(providers.gradleProperty('miaBenchV15Lod').getOrElse('false').toBoolean()) jvmArgs '-Xmx5G'
+            property 'mia.bench.v15GreenCoverage', providers.gradleProperty('miaBenchV15GreenCoverage').getOrElse('false')
+            if(providers.gradleProperty('miaBenchV15Output').isPresent())property 'mia.bench.v15Output', rootProject.file(providers.gradleProperty('miaBenchV15Output').get()).absolutePath
+            if (providers.gradleProperty('miaBenchV15').getOrElse('false').toBoolean()) {
+                property 'mia.bench.v15', 'true'
+                property 'mia.bench.v15Output', rootProject.file(providers.gradleProperty('miaBenchV15Output').getOrElse("${rootProject.miaStorageRoot}/codex/20261013-landscape-v15/part1")).absolutePath
+            }
+            if (providers.gradleProperty('miaBenchLodManifest').isPresent()) {
+                property 'mia.bench.lodManifest', rootProject.file(providers.gradleProperty('miaBenchLodManifest').get()).absolutePath
+                property 'mia.bench.lodOutput', rootProject.file(providers.gradleProperty('miaBenchLodOutput').getOrElse("${rootProject.miaStorageRoot}/codex/20261013-lod-speed/run")).absolutePath
+                property 'mia.bench.lodCameras', providers.gradleProperty('miaBenchLodCameras').getOrElse('shaft,ledge,island')
+                property 'mia.bench.lodSeconds', providers.gradleProperty('miaBenchLodSeconds').getOrElse('1800')
+                property 'mia.bench.lodReference', providers.gradleProperty('miaBenchLodReference').getOrElse('false')
+                if (providers.gradleProperty('miaBenchLodReferenceFixture').isPresent()) {
+                    property 'mia.bench.lodReferenceFixture', rootProject.file(providers.gradleProperty('miaBenchLodReferenceFixture').get()).absolutePath
+                }
+                property 'mia.bench.lodMetrics', 'true'
+                property 'mia.bench.lodRepeatHistory', providers.gradleProperty('miaBenchLodRepeatHistory').getOrElse('false')
+                property 'mia.bench.lodResidentScale', providers.gradleProperty('miaBenchLodResidentScale').getOrElse('6')
+                property 'mia.bench.lodCacheMode', providers.gradleProperty('miaBenchLodCacheMode').getOrElse('cold')
+                if (providers.gradleProperty('miaBenchLodCacheRoot').isPresent()) property 'mia.bench.lodCacheRoot', rootProject.file(providers.gradleProperty('miaBenchLodCacheRoot').get()).absolutePath
+                if (providers.gradleProperty('miaBenchLodReferenceRun').isPresent()) property 'mia.bench.lodReferenceRun', rootProject.file(providers.gradleProperty('miaBenchLodReferenceRun').get()).absolutePath
+                def lodHeapMiB = providers.gradleProperty('miaBenchLodHeapMiB').getOrElse('6144')
+                if (!(lodHeapMiB ==~ /[0-9]{4}/) || lodHeapMiB.toInteger() < 3072 || lodHeapMiB.toInteger() > 8192) throw new GradleException('miaBenchLodHeapMiB must be 3072..8192')
+                jvmArgs "-Xmx${lodHeapMiB}m"
+            }
+            // Opt-in generator cost measurement; ordinary regressions skip it.
+            if (providers.gradleProperty('miaBenchGeneratorManifest').isPresent()) {
+                property 'mia.bench.generatorManifest', rootProject.file(providers.gradleProperty('miaBenchGeneratorManifest').get()).absolutePath
+                property 'mia.bench.generatorOutput', rootProject.file(providers.gradleProperty('miaBenchGeneratorOutput').getOrElse("${rootProject.miaStorageRoot}/evidence/generator-cost.json")).absolutePath
+                if (providers.gradleProperty('miaBenchGeneratorJfr').isPresent()) {
+                    jvmArgs "-XX:StartFlightRecording=filename=${rootProject.file(providers.gradleProperty('miaBenchGeneratorJfr').get()).absolutePath},settings=profile,dumponexit=true"
+                }
+            }
+        }
+    }
+}
+
+repositories {
+    maven { url = 'https://api.modrinth.com/maven' }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    implementation project(':kernel')
+    if (providers.gradleProperty('miaAlexCaves').getOrElse('false').toBoolean()) {
+        runtimeOnly fg.deobf('maven.modrinth:alexs-caves:lC8HHXOF')
+        runtimeOnly fg.deobf('maven.modrinth:citadel:lTAAe4sZ')
+    }
+    // Public API only at compile time; it must not be embedded in our mod JAR.
+    compileOnly 'maven.modrinth:DistantHorizonsApi:7.2.0'
+    // Opt-in isolated userdev client, using the unchanged official release.
+    if (miaDistantHorizons) {
+        runtimeOnly fg.deobf('maven.modrinth:distanthorizons:3.3.3-1.20.1')
+    }
+    if (miaOptimizationMods) {
+        runtimeOnly fg.deobf('maven.modrinth:modernfix:hHwYTQwa')
+        runtimeOnly fg.deobf('maven.modrinth:ferrite-core:DG5Fn9Sz')
+        // Last verified author release with Forge refmaps for the named userdev environment.
+        runtimeOnly fg.deobf('maven.modrinth:immediatelyfast:xNaL38Bs')
+    }
+    if (miaShaderPipeline) {
+        runtimeOnly fg.deobf('maven.modrinth:embeddium:UTbfe5d1')
+        runtimeOnly fg.deobf('maven.modrinth:oculus:iQ1SwGc3')
+    }
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+}
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8'; options.release = 17 }
+tasks.named('processResources').configure {
+    inputs.property 'modVersion', project.version.toString()
+    filesMatching('META-INF/mods.toml') {
+        expand mod_version: project.version.toString()
+    }
+}
+
+tasks.named('jar', Jar).configure {
+    from project(':kernel').sourceSets.main.output
+    dependsOn ':kernel:classes'
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+    manifest { attributes 'Implementation-Version': project.version,
+            'MixinConfigs': 'madeinabyss.deep-probe.mixins.json' }
+    finalizedBy 'reobfJar'
+}
+
+// Fixed Mixin AP with the actual ForgeGradle SRG output; no floating MixinGradle plugin.
+def miaMixinMappings = layout.buildDirectory.file('mia-mixin/mcp-to-srg.srg')
+def miaMixinMembers = layout.buildDirectory.file('mia-mixin/members.srg')
+tasks.register('prepareMiaMixinMappings') {
+    dependsOn 'createSrgToMcp'
+    inputs.file(layout.buildDirectory.file('createSrgToMcp/output.srg'))
+    outputs.file(miaMixinMappings)
+    doLast {
+        def reversed = layout.buildDirectory.file('createSrgToMcp/output.srg').get().asFile.readLines().collect { line ->
+            def parts = line.split(' ')
+            switch (parts[0]) {
+                case 'CL:': case 'FD:': case 'PK:': return "${parts[0]} ${parts[2]} ${parts[1]}"
+                case 'MD:': return "MD: ${parts[3]} ${parts[4]} ${parts[1]} ${parts[2]}"
+                default: throw new GradleException("Unexpected ForgeGradle SRG row: ${parts[0]}")
+            }
+        }
+        def output = miaMixinMappings.get().asFile
+        output.parentFile.mkdirs()
+        output.text = reversed.join('\n') + '\n'
+    }
+}
+tasks.named('compileJava', JavaCompile).configure {
+    dependsOn 'prepareMiaMixinMappings'
+    outputs.file(miaMixinMembers)
+    options.compilerArgs += [
+        '-AreobfSrgFile=' + miaMixinMappings.get().asFile.absolutePath,
+        '-AoutRefMapFile=' + layout.buildDirectory.file('classes/java/main/madeinabyss.deep-probe.refmap.json').get().asFile.absolutePath,
+        '-AoutSrgFile=' + miaMixinMembers.get().asFile.absolutePath
+    ]
+}
+// ForgeGradle registers reobfJar after project evaluation; configure its actual type lazily.
+tasks.withType(net.minecraftforge.gradle.userdev.tasks.RenameJarInPlace).configureEach {
+    dependsOn tasks.named('compileJava')
+    extraMappings.from(miaMixinMembers)
+}

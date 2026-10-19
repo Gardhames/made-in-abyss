@@ -1,0 +1,17 @@
+plugins { id 'base' }
+
+def localSettings = new Properties()
+def localSettingsFile = file('local.properties')
+if (localSettingsFile.isFile()) localSettingsFile.withReader('UTF-8') { localSettings.load(it) }
+ext.miaStorageRoot = file(providers.gradleProperty('miaStorageRoot')
+        .orElse(providers.environmentVariable('MIA_STORAGE_ROOT'))
+        .getOrElse(localSettings.getProperty('miaStorageRoot', '.local'))).absolutePath
+
+allprojects {
+    group = 'dev.madeinabyss'
+    version = rootProject.file('VERSION').text.trim()
+    layout.buildDirectory.set(file("${rootProject.miaStorageRoot}/build/${project.name}"))
+}
+
+tasks.named('build') { dependsOn ':kernel:build', ':forge:build' }
+tasks.named('check') { dependsOn ':kernel:check' }

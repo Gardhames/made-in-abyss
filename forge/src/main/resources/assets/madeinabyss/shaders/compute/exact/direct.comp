@@ -1,0 +1,9 @@
+#version 460 core
+#extension GL_ARB_gpu_shader_int64 : require
+#extension GL_ARB_gpu_shader_fp64 : require
+layout(local_size_x=128) in;
+#include "common.glsl"
+void main(){uint job=invocation();if(job>=uCount)return;uint id=uJobOffset+job;int width=uGridSize.x*8+1;ivec2 p=uGridMin.xz+ivec2(int(id)%width,int(id)/width);int lower=knownLower(p),first=lower-1,light=15,size=0;uint lo=0u,hi=0u;
+    for(int y=uSky-1;y>=lower;y--){if(first<lower&&uniformCube(ivec3(p.x,y,p.y)>>4)==0){y=max(lower,(y>>4)*16);continue;}int op=opacityAt(ivec3(p.x,y,p.y));if(op<0)return;if(first<lower&&op==0)continue;if(first<lower)first=y;light=max(0,light-max(1,op));if(size<8)lo|=uint(light)<<uint(size*4);else hi|=uint(light)<<uint((size-8)*4);size++;if(light==0)break;}
+    columns[id*3u]=first;columns[id*3u+1u]=int(lo);columns[id*3u+2u]=int(hi);
+}

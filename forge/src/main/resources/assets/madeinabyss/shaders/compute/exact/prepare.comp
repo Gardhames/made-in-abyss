@@ -1,0 +1,13 @@
+#version 460 core
+#extension GL_ARB_gpu_shader_int64 : require
+#extension GL_ARB_gpu_shader_fp64 : require
+layout(local_size_x=128) in;
+#include "common.glsl"
+void main(){uint job=invocation();if(job>=uCount)return;uint owner=uJobOffset+job;int base=0,n=faceCount(owner);for(int f=0;f<6;f++)faces[owner*8u+2u+uint(f)]=-2;
+    for(int f=0;f<n;f++){ivec3 p=facePoint(owner,f);int op=opacityAt(p);if(op>=0&&op<15)base=max(base,directAt(p));if(base==15)break;}faces[owner*8u]=base;if(base>=14)return;
+    for(int f=0;f<n;f++){ivec3 p=facePoint(owner,f);int op=opacityAt(p);if(op<0||op>=15)continue;if(op>0){requestQuant(owner,f);continue;}
+        ivec3 b=(p>>3)*8;ivec3 phase=p-b;bool anyOpen=false;
+        for(int dy=0;dy<=1;dy++)for(int dz=0;dz<=1;dz++)for(int dx=0;dx<=1;dx++){if((dx==0?8-phase.x:phase.x)==0||(dy==0?8-phase.y:phase.y)==0||(dz==0?8-phase.z:phase.z)==0)continue;ivec3 q=b+ivec3(dx,dy,dz)*8;if(q.y<knownLower(q.xz)||opacityAt(q)>=15||!openSegment(p,q))continue;anyOpen=true;requestFraction(q);}
+        if(!anyOpen)requestQuant(owner,f);
+    }
+}

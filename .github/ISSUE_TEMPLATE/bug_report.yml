@@ -1,0 +1,71 @@
+name: Bug report
+description: Report a reproducible problem in the engine probe.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is an experimental prototype. Report one reproducible problem per issue.
+        Remove credentials, personal paths, player identifiers, and private world data from attachments.
+  - type: input
+    id: revision
+    attributes:
+      label: Project version and commit
+      placeholder: 0.1.0-probe and the full commit SHA
+    validations:
+      required: true
+  - type: input
+    id: minecraft
+    attributes:
+      label: Minecraft version
+      placeholder: 1.20.1
+    validations:
+      required: true
+  - type: input
+    id: forge
+    attributes:
+      label: Forge version
+      placeholder: 47.4.20
+    validations:
+      required: true
+  - type: input
+    id: integrations
+    attributes:
+      label: Distant Horizons, Oculus, Embeddium, and shader-pack versions
+      placeholder: List exact versions, or state that the integration is disabled.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment and profile
+      description: Include OS, Java version, GPU/driver, world profile, relevant flags, position, and camera direction.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Give the smallest repeatable sequence, including whether the cache was fresh.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Redacted logs and diagnostics
+      description: Attach a relevant excerpt and crash report, not entire caches or saves.
+      render: text
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Attachment review
+      options:
+        - label: I reviewed attachments for private data and have permission to publish any images.
+          required: true
